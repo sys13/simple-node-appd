@@ -1,27 +1,26 @@
-var appd = require('appdynamics')
-var sleep = require('sleep')
-
-var NUM_OF_REQUESTS_PER_BT = 1000
+var http = require('http')
 
 var config = {
   controllerHostName: 'localhost',
   controllerPort: 8090,
   controllerSslEnabled: false,
   accountName: 'customer1',
-  accountAccessKey: '726d7e2d-afce-4feb-b443-db12a5fd30aa',
+  accountAccessKey: 'fb3b0aff-111f-4439-8678-a0efefc5f277',
   applicationName: 'App1',
   tierName: 'Tier1',
   nodeName: 'Node1',
   debug: true,
+  libagent: true,
 }
 
-// connect to the controller
+var appd = require('appdynamics')
 appd.profile(config)
 
-// generate traffic for each bt
-for (let i = 0; i < NUM_OF_REQUESTS_PER_BT; i += 1) {
-  console.log(`${new Date()} Starting Transaction - hello`)
+var server = http.createServer((request, response) => {
   var txn = appd.startTransaction('hello')
   txn.end()
-  sleep.sleep(1)
-}
+  response.writeHead(200, {"Content-Type": "text/plain"})
+  response.end("Hello World\n")
+})
+
+server.listen(8000)
